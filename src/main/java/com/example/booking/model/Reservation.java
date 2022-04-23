@@ -1,5 +1,6 @@
 package com.example.booking.model;
 
+import com.example.booking.enums.ReservationStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,19 +21,22 @@ public class Reservation {
     private Long id;
 
     @Column(name = "customer_id")
-    private String customerId;
+    private Long customerId;
 
     @Column(name = "room_id")
-    private String roomId;
+    private Long roomId;
 
     @Column(name = "booking_date")
     private LocalDate bookingDate;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
+    @Column(name = "check_in_date")
+    private LocalDate checkInDate;
 
-    @Column(name = "end_date")
-    private LocalDate endDate;
+    @Column(name = "check_out_date")
+    private LocalDate checkOutDate;
+
+    @Column(name = "status")
+    private ReservationStatus status;
 
     @Column(name = "total_value")
     private BigDecimal totalValue;

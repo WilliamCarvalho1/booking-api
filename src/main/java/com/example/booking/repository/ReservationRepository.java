@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, String> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     //TODO alterar
     @Modifying
@@ -22,8 +22,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, String
     @Query("DELETE Reservation r WHERE r.id = ?1 ")
     void delete(long id);
 
-    Reservation findById(Long id);
-
-    @Query("SELECT startDate, endDate from Reservation where room_id = id")
+    @Query("SELECT checkInDate, checkOutDate from Reservation where room_id = id")
     List<LocalDate> findUnavailableDates(Long id);
 }

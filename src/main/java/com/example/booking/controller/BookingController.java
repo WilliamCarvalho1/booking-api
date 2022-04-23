@@ -4,10 +4,9 @@ import com.example.booking.dto.ReservationRequestDto;
 import com.example.booking.dto.ReservationResponseDto;
 import com.example.booking.dto.RoomsAvailabilityDto;
 import com.example.booking.model.Reservation;
-import com.example.booking.model.Room;
 import com.example.booking.repository.ReservationRepository;
 import com.example.booking.repository.RoomRepository;
-import com.example.booking.service.IBookingService;
+import com.example.booking.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ import java.util.List;
 public class BookingController {
 
     @Autowired
-    private IBookingService bookingService;
+    private BookingService bookingService;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -29,9 +28,9 @@ public class BookingController {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @GetMapping("/startDate/{startDate}/endDate/{endDate}")
-    public ResponseEntity<List<RoomsAvailabilityDto>> getAvailability(@PathVariable LocalDate startDate, LocalDate endDate) {
-        return new ResponseEntity<>(bookingService.getAvailability(startDate, endDate), HttpStatus.OK);
+    @GetMapping("/checkInDate/{checkInDate}/checkOutDate/{checkOutDate}")
+    public ResponseEntity<List<RoomsAvailabilityDto>> getAvailability(@PathVariable LocalDate checkInDate, LocalDate checkOutDate) {
+        return new ResponseEntity<>(bookingService.getAvailability(checkInDate, checkOutDate), HttpStatus.OK);
     }
 
     @PostMapping("/reserve-room")

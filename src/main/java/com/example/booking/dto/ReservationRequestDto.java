@@ -14,15 +14,11 @@ public class ReservationRequestDto {
 
     private CustomerDto customer;
 
-    private LocalDate startDate;
+    private LocalDate checkInDate;
 
-    private LocalDate endDate;
-
-    private int floor;
+    private LocalDate checkOutDate;
 
     private Long roomId;
-
-    private String type;
 
     private BigDecimal price;
 

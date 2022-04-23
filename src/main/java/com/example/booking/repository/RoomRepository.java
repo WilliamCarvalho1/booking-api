@@ -7,9 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, String> {
+public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Modifying
     @Query("UPDATE Room r SET free = false WHERE r.id = ?1 ")
@@ -22,6 +23,6 @@ public interface RoomRepository extends JpaRepository<Room, String> {
     @Query("SELECT Room r WHERE r.flagAvailable = true")
     List<Room> findAllAvailableRooms();
 
-    Room findById(Long id);
+    Optional<Room> findById(Long id);
 
 }

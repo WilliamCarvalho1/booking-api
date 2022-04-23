@@ -21,9 +21,9 @@ public class ReservationDto {
 
     private LocalDate bookingDate;
 
-    private LocalDate startDate;
+    private LocalDate checkInDate;
 
-    private LocalDate endDate;
+    private LocalDate checkOutDate;
 
     private BigDecimal totalValue;
 
