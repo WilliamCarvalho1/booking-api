@@ -2,14 +2,12 @@ package com.example.booking.service;
 
 import com.example.booking.dto.ReservationRequestDto;
 import com.example.booking.dto.ReservationResponseDto;
-import com.example.booking.dto.RoomsAvailabilityDto;
 import com.example.booking.enums.ReservationStatus;
 import com.example.booking.model.Reservation;
 import com.example.booking.repository.CustomerRepository;
 import com.example.booking.repository.ReservationRepository;
 import com.example.booking.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +16,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.booking.utils.BookingUtils.getDatesBetween;
 
 @Service
 @Transactional
@@ -32,26 +32,30 @@ public class BookingService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public List<RoomsAvailabilityDto> getAvailability(LocalDate checkInDate, LocalDate checkOutDate) {
+    public List<LocalDate> getAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
-        List<RoomsAvailabilityDto> roomsAvailability = new ArrayList<>(0);
-        List<LocalDate> unavailableDates = new ArrayList<>(0);
+        List<LocalDate> roomsAvailability = new ArrayList<>(0);
 
-        var freeRooms = roomRepository.findAllAvailableRooms();
+        var periodToBeBooked = getDatesBetween(checkInDate, checkOutDate);
 
+        var reservedPeriods = reservationRepository.findUnavailableDates(roomId);
 
-        freeRooms.forEach(r -> {
-            unavailableDates.addAll(reservationRepository.findUnavailableDates(r.getId()));
-
+        reservedPeriods.forEach(reservedPeriod -> {
+            var unavailableDates = getDatesBetween(reservedPeriod.getCheckInDate(), reservedPeriod.getCheckOutDate());
+            periodToBeBooked.forEach(date -> {
+                if (!unavailableDates.contains(date)) {
+                    roomsAvailability.add(date);
+                }
+            });
         });
 
-
-        return null;
+        return roomsAvailability;
     }
 
     public ReservationResponseDto createReservation(ReservationRequestDto body) {
 
-        var room = roomRepository.findById(body.getRoomId());
+        var room = roomRepository.findById(body.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Room is not available"));
 
         var customer = customerRepository.findById(body.getCustomer().getId())
                 .orElseThrow(() -> new RuntimeException("Customer doesn't exist"));
@@ -83,8 +87,7 @@ public class BookingService {
         return null;
     }
 
-    public boolean isAvailableDate(LocalDate checkInDate, LocalDate checkOutDate){
-
+    public boolean isAvailableDate(LocalDate checkInDate, LocalDate checkOutDate) {
 
 
         return false;

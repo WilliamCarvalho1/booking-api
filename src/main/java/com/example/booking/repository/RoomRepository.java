@@ -23,6 +23,4 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query("SELECT Room r WHERE r.flagAvailable = true")
     List<Room> findAllAvailableRooms();
 
-    Optional<Room> findById(Long id);
-
 }
