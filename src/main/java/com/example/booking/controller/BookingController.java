@@ -1,8 +1,12 @@
 package com.example.booking.controller;
 
+import com.example.booking.dto.AlterationRequestDto;
 import com.example.booking.dto.ReservationRequestDto;
 import com.example.booking.dto.ReservationResponseDto;
-import com.example.booking.model.Reservation;
+import com.example.booking.exception.CheckInDateShouldBeOneDayAfterBookingDateException;
+import com.example.booking.exception.NoDatesAvailableException;
+import com.example.booking.exception.NoReservationAboveThreeDaysException;
+import com.example.booking.exception.ReservationDoesNotExistException;
 import com.example.booking.repository.ReservationRepository;
 import com.example.booking.repository.RoomRepository;
 import com.example.booking.service.BookingService;
@@ -28,30 +32,29 @@ public class BookingController {
     private ReservationRepository reservationRepository;
 
     @GetMapping("/checkInDate/{checkInDate}/checkOutDate/{checkOutDate}/roomId/{roomId}")
-    public ResponseEntity<List<LocalDate>> getAvailability(@PathVariable LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+    public ResponseEntity<List<LocalDate>> getAvailability(@PathVariable LocalDate checkInDate, LocalDate checkOutDate,
+                                                           Long roomId) throws NoDatesAvailableException {
         return new ResponseEntity<>(bookingService.getAvailability(checkInDate, checkOutDate, roomId), HttpStatus.OK);
     }
 
     @PostMapping("/reserve-room")
-    public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto body) {
+    public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto body)
+            throws NoDatesAvailableException, NoReservationAboveThreeDaysException,
+            CheckInDateShouldBeOneDayAfterBookingDateException {
         return new ResponseEntity<>(bookingService.createReservation(body), HttpStatus.OK);
     }
 
     @PutMapping("/modify-reservation")
-    public ResponseEntity<ReservationResponseDto> modifyReservation(@RequestBody ReservationRequestDto body) {
+    public ResponseEntity<ReservationResponseDto> modifyReservation(@RequestBody AlterationRequestDto body)
+            throws NoDatesAvailableException, NoReservationAboveThreeDaysException,
+            CheckInDateShouldBeOneDayAfterBookingDateException {
         return new ResponseEntity<>(bookingService.modifyReservation(body), HttpStatus.OK);
     }
 
-    @DeleteMapping("/cancel-reservation")
-    public ResponseEntity<Reservation> cancelReservation(@RequestBody Long reservationId) {
-        var reservation = reservationRepository.findById(reservationId);
-
-        if (reservation != null) {
-            reservationRepository.delete(reservationId);
-            return ResponseEntity.ok(reservation.orElseThrow(() -> new RuntimeException("Reservation doesn't exist")));
-        }
-
-        return ResponseEntity.notFound().build();
+    @PutMapping("/cancel-reservation")
+    public ResponseEntity<ReservationResponseDto> cancelReservation(@RequestBody Long reservationId)
+            throws ReservationDoesNotExistException {
+        return new ResponseEntity<>(bookingService.cancelReservation(reservationId), HttpStatus.OK);
     }
 
 }

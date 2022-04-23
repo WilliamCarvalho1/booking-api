@@ -1,17 +1,19 @@
 package com.example.booking.dto;
 
-import com.example.booking.model.Customer;
-import com.example.booking.model.Reservation;
+import com.example.booking.enums.ReservationStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
 public class ReservationResponseDto {
+
+    private Long reservationId;
 
     private String firstName;
 
@@ -21,22 +23,16 @@ public class ReservationResponseDto {
 
     private String email;
 
+    private LocalDate bookingDate;
+
     private LocalDate checkInDate;
 
     private LocalDate checkOutDate;
 
+    private Long roomId;
 
-    public static ReservationResponseDto of(Reservation reservation, Customer customer) {
+    private ReservationStatus status;
 
-        return ReservationResponseDto.builder()
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
-                .email(customer.getEmail())
-                .phone(customer.getPhone())
-                .checkInDate(reservation.getCheckInDate())
-                .checkOutDate(reservation.getCheckOutDate())
-                .build();
-
-    }
+    private BigDecimal totalValue;
 
 }

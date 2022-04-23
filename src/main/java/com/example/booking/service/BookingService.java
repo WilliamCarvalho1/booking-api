@@ -1,11 +1,15 @@
 package com.example.booking.service;
 
+import com.example.booking.dto.AlterationRequestDto;
 import com.example.booking.dto.ReservationRequestDto;
 import com.example.booking.dto.ReservationResponseDto;
+import com.example.booking.enums.ReservationStatus;
+import com.example.booking.exception.CheckInDateShouldBeOneDayAfterBookingDateException;
+import com.example.booking.exception.NoDatesAvailableException;
+import com.example.booking.exception.NoReservationAboveThreeDaysException;
+import com.example.booking.exception.ReservationDoesNotExistException;
 import com.example.booking.mapper.ReservationMapper;
-import com.example.booking.repository.CustomerRepository;
 import com.example.booking.repository.ReservationRepository;
-import com.example.booking.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +18,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.booking.utils.BookingUtils.getDatesBetween;
+import static com.example.booking.mapper.ReservationMapper.entityToDto;
+import static com.example.booking.utils.BookingUtils.*;
+import static com.example.booking.utils.RepositoryUtils.getCustomer;
+import static com.example.booking.utils.RepositoryUtils.getRoom;
 
 @Service
 @Transactional
@@ -23,13 +30,8 @@ public class BookingService {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    public List<LocalDate> getAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+    public List<LocalDate> getAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) throws
+            NoDatesAvailableException {
 
         var reservedPeriods = reservationRepository.findUnavailableDates(roomId);
 
@@ -46,30 +48,61 @@ public class BookingService {
             });
         });
 
+        if (availableDates.isEmpty()) {
+            throw new NoDatesAvailableException();
+        }
+
         return availableDates;
     }
 
-    public ReservationResponseDto createReservation(ReservationRequestDto body) {
+    public ReservationResponseDto createReservation(ReservationRequestDto body) throws NoDatesAvailableException,
+            NoReservationAboveThreeDaysException, CheckInDateShouldBeOneDayAfterBookingDateException {
 
-        var room = roomRepository.findById(body.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Room is not available"));
+        checkBookingRestrictions(body.getCheckInDate(), body.getCheckOutDate());
 
-        var customer = customerRepository.findById(body.getCustomer().getId())
-                .orElseThrow(() -> new RuntimeException("Customer doesn't exist"));
+        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
+
+        var room = getRoom(body.getRoomId());
+
+        var customer = getCustomer(body.getCustomer().getId());
 
         var reservation = ReservationMapper.dtoToEntity(body, room);
 
         reservationRepository.saveAndFlush(reservation);
 
-        return ReservationResponseDto.of(reservation, customer);
+        return entityToDto(reservation, customer);
     }
 
-    public ReservationResponseDto modifyReservation(ReservationRequestDto body) {
-        return null;
+    public ReservationResponseDto modifyReservation(AlterationRequestDto body) throws NoDatesAvailableException,
+            NoReservationAboveThreeDaysException, CheckInDateShouldBeOneDayAfterBookingDateException {
+
+        checkBookingRestrictions(body.getCheckInDate(), body.getCheckOutDate());
+
+        var reservation = reservationRepository.getById(body.getReservationId());
+
+        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), reservation.getRoomId());
+
+        var room = getRoom(reservation.getRoomId());
+
+        reservation = ReservationMapper.alterationRequestDtoToEntity(body, reservation, room.getPrice());
+
+        reservationRepository.saveAndFlush(reservation);
+
+        return entityToDto(reservation, getCustomer(reservation.getCustomerId()));
     }
 
-    public ReservationResponseDto deleteReservation(ReservationRequestDto body) {
-        return null;
+    public ReservationResponseDto cancelReservation(Long reservationId) throws ReservationDoesNotExistException {
+
+        var reservation = reservationRepository.getById(reservationId);
+
+        if (reservation != null) {
+            reservation.setStatus(ReservationStatus.CANCELED);
+            reservationRepository.saveAndFlush(reservation);
+        } else {
+            throw new ReservationDoesNotExistException(reservationId);
+        }
+
+        return entityToDto(reservation, getCustomer(reservation.getCustomerId()));
     }
 
 }

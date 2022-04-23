@@ -22,7 +22,6 @@ public class Room {
 
     private BigDecimal price;
 
-    @Column(name = "flag_available")
-    private boolean flagAvailable;
+    private boolean blocked;
 
 }
