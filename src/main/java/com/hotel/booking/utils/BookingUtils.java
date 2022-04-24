@@ -1,7 +1,6 @@
 package com.hotel.booking.utils;
 
 import com.hotel.booking.exception.CheckInDateShouldBeOneDayAfterBookingDateException;
-import com.hotel.booking.exception.NoDatesAvailableException;
 import com.hotel.booking.exception.NoReservationAboveThreeDaysException;
 import com.hotel.booking.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,8 @@ public class BookingUtils {
         return roomPrice.multiply(BigDecimal.valueOf(numberOfDays));
     }
 
-    public static void checkBookingRestrictions(LocalDate checkInDate, LocalDate checkOutDate) throws NoReservationAboveThreeDaysException, CheckInDateShouldBeOneDayAfterBookingDateException {
+    public static void checkBookingRestrictions(LocalDate checkInDate, LocalDate checkOutDate) throws
+            NoReservationAboveThreeDaysException, CheckInDateShouldBeOneDayAfterBookingDateException {
 
         var bookingDay = LocalDate.now();
 

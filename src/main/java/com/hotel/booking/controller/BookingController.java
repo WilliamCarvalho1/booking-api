@@ -33,7 +33,7 @@ public class BookingController {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @GetMapping("/checkInDate/{checkInDate}/checkOutDate/{checkOutDate}/roomId/{roomId}")
+    @GetMapping("/check-availability/{roomId}/{checkInDate}/{checkOutDate}")
     public ResponseEntity<List<LocalDate>> getAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
                                                            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate,
                                                            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Long roomId)
