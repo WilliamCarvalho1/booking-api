@@ -1,0 +1,32 @@
+package com.hotel.booking.dto;
+
+import com.hotel.booking.model.Customer;
+import com.hotel.booking.model.Reservation;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+@Builder
+public class AlterationRequestDto {
+
+    private Long reservationId;
+
+    private LocalDate checkInDate;
+
+    private LocalDate checkOutDate;
+
+    public static AlterationRequestDto of(Reservation reservation, Customer customer) {
+
+        return AlterationRequestDto.builder()
+                .reservationId(reservation.getId())
+                .checkInDate(reservation.getCheckInDate())
+                .checkOutDate(reservation.getCheckOutDate())
+                .build();
+
+    }
+
+}
