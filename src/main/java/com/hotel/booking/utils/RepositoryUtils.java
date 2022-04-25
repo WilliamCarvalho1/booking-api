@@ -34,8 +34,13 @@ public class RepositoryUtils {
     }
 
     public Room getRoom(Long roomId) {
-        return roomRepository.findById(roomId)
-                .orElseThrow(() -> new RoomNotAvailableException("Room is not available or does not exist"));
+        var room = roomRepository.findUnblockedRoom(roomId);
+
+        if (room == null) {
+            throw new RoomNotAvailableException("Room is not available or does not exist");
+        }
+
+        return room;
     }
 
     public Reservation getReservation(Long reservationId) {

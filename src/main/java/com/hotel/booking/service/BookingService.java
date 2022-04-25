@@ -26,9 +26,11 @@ public class BookingService {
 
     public CheckAvailabilityResponseDto getRoomAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
+        var room = repositoryUtils.getRoom(roomId);
+
         checkBookingDatesRestrictions(checkInDate, checkOutDate);
 
-        List<StartAndEndDates> reservedDates = repositoryUtils.findUnavailableDates(roomId);
+        List<StartAndEndDates> reservedDates = repositoryUtils.findUnavailableDates(room.getId());
 
         var unavailableDates = getUnavailablePeriods(reservedDates);
 
