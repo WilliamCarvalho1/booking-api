@@ -1,26 +1,22 @@
 package com.hotel.booking.mapper;
 
-import com.hotel.booking.dto.AlterationRequestDto;
 import com.hotel.booking.dto.ReservationRequestDto;
 import com.hotel.booking.dto.ReservationResponseDto;
 import com.hotel.booking.enums.ReservationStatus;
 import com.hotel.booking.model.Customer;
 import com.hotel.booking.model.Reservation;
 import com.hotel.booking.model.Room;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static com.hotel.booking.utils.BookingUtils.getTotalValue;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReservationMapper {
 
-    private ReservationMapper() {
-        throw new IllegalStateException("Utility class");
-    }
-
     public static Reservation dtoToEntity(ReservationRequestDto body, Room room) {
-
         return Reservation.builder()
                 .bookingDate(LocalDate.now())
                 .checkInDate(body.getCheckInDate())
@@ -28,26 +24,11 @@ public class ReservationMapper {
                 .roomId(room.getId())
                 .customerId(body.getCustomerId())
                 .totalValue(getTotalValue(room.getPrice(), body.getCheckInDate(), body.getCheckOutDate()))
-                .status(ReservationStatus.ACTIVE.getReservationStatus())
-                .build();
-    }
-
-    public static Reservation alterationRequestDtoToEntity(AlterationRequestDto body, Reservation reservation,
-                                                           BigDecimal roomPrice) {
-
-        return Reservation.builder()
-                .bookingDate(LocalDate.now())
-                .checkInDate(body.getCheckInDate())
-                .checkOutDate(body.getCheckOutDate())
-                .roomId(reservation.getRoomId())
-                .customerId(reservation.getCustomerId())
-                .totalValue(getTotalValue(roomPrice, body.getCheckInDate(), body.getCheckOutDate()))
-                .status(ReservationStatus.ALTERED.getReservationStatus())
+                .status(ReservationStatus.ACTIVE.getStatus())
                 .build();
     }
 
     public static ReservationResponseDto entityToDto(Reservation reservation, Customer customer) {
-
         return ReservationResponseDto.builder()
                 .reservationId(reservation.getId())
                 .firstName(customer.getFirstName())

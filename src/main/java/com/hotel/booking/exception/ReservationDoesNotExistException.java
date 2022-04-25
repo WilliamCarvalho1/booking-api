@@ -1,7 +1,12 @@
 package com.hotel.booking.exception;
 
-public class ReservationDoesNotExistException extends Exception {
-    public ReservationDoesNotExistException() {
-        super();
+import java.io.Serial;
+
+public class ReservationDoesNotExistException extends RuntimeException {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public ReservationDoesNotExistException(String msg) {
+        super(msg);
     }
 }

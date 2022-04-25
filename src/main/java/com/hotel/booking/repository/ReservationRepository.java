@@ -14,6 +14,4 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT reservation from Reservation reservation where reservation.roomId = ?1 and reservation.status = 'active'")
     List<StartAndEndDates> findUnavailableDates(Long id);
 
-    List<Reservation> findByRoomId(Long roomId);
-
 }

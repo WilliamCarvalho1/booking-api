@@ -1,6 +1,5 @@
 package com.hotel.booking.dto;
 
-import com.hotel.booking.enums.ReservationStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

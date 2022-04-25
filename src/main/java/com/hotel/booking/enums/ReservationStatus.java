@@ -10,10 +10,10 @@ public enum ReservationStatus {
     CANCELED("canceled"),
     FINISHED("finished");
 
-    private String reservationStatus;
+    private final String status;
 
-    ReservationStatus(String reservationStatus) {
-        this.reservationStatus = reservationStatus;
+    ReservationStatus(String status) {
+        this.status = status;
     }
 
 }

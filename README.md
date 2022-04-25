@@ -2,22 +2,13 @@
 
 ## Some considerations:
 
-- For the purpose of this exercise, this hotel has 3 floors and 3 rooms, only one of them is enabled to receive guests.
-- The customers (guests) have to be previously inserted in the database via a "Registration Endpoint" (which I didn't developed bacause I think it's not in the scope of this task) in order to create a new reservation.
-- Flyway is used to migrate the database.
-- The database runs in a Docker container.
+- For the purpose of this task, this hotel has 3 floors and 3 rooms.
+- The rooms have to be previously inserted in the database, so the API can work properly.
+- Only one of the rooms is available to receive guests by the flag blocked set to "false".
+- The room's number is its id.
+- The customers (guests) have to be previously inserted in the database, so the API can work properly.
+- Flyway is used to migrate the database, so we can test the API.
+- The database runs in a Docker's MariaDB container.
+- Due to unit testing the whole API is very time-consuming, I've just written a few unit tests. 
 
 ### Swagger URL: http://localhost:8080/swagger-ui.html
-
-### JSONs to be used in Postman:
-
-### PUT endpoint at localhost:8080/v1/booking/...
-- The API receives a Json like in this example:
-  {
-...
-  }
-- It returns a Json like in this example:
-  {
-  "id": 1,
-...
-  }
