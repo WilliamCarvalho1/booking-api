@@ -1,6 +1,7 @@
 package com.hotel.booking.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
 public class ReservationResponseDto {
 
     private Long reservationId;
