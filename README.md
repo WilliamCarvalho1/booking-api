@@ -12,7 +12,7 @@
 - Flyway is used to migrate the database, so we can test the API.
 - The database runs in a Docker's MariaDB container.
 - Due to unit testing the whole API is very time-consuming, I've just written a few unit tests.
-- I would implement HATEOAS if I had more time.
+- I would implement HATEOAS and logs if I had more time.
 
 ### Swagger URL: http://localhost:8080/swagger-ui.html
 
