@@ -39,10 +39,6 @@ public class BookingService {
 
     public ReservationResponseDto create(ReservationRequestDto body) {
 
-        // Just to check if customer and room exist
-        repositoryUtils.getCustomer(body.getCustomerId());
-        repositoryUtils.getRoom(body.getRoomId());
-
         checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
         checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
 
