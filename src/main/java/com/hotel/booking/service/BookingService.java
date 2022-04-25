@@ -2,6 +2,7 @@ package com.hotel.booking.service;
 
 import com.hotel.booking.dto.*;
 import com.hotel.booking.enums.ReservationStatus;
+import com.hotel.booking.exception.CustomerDoesNotMatchException;
 import com.hotel.booking.exception.DateNotAvailableException;
 import com.hotel.booking.exception.ReservationDoesNotExistException;
 import com.hotel.booking.mapper.AlterationMapper;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static com.hotel.booking.utils.BookingUtils.*;
 
@@ -64,15 +66,21 @@ public class BookingService {
 
         var reservation = repositoryUtils.getReservation(body.getReservationId());
 
-        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), reservation.getRoomId());
+        var customer = repositoryUtils.getCustomer(body.getCustomerId());
 
-        var room = repositoryUtils.getRoom(reservation.getRoomId());
+        if (!Objects.equals(reservation.getCustomerId(), customer.getId())) {
+            throw new CustomerDoesNotMatchException("Provided customer does not match the reservation's customer.");
+        }
 
-        reservation = AlterationMapper.alterationRequestDtoToEntity(body, reservation, room.getPrice());
+        var room = repositoryUtils.getRoom(body.getRoomId());
+
+        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), room.getId());
+
+        reservation = AlterationMapper.alterationRequestDtoToEntity(body, reservation, room);
 
         repositoryUtils.save(reservation);
 
-        return ReservationMapper.entityToDto(reservation, repositoryUtils.getCustomer(reservation.getCustomerId()));
+        return ReservationMapper.entityToDto(reservation, customer);
     }
 
     public ReservationResponseDto cancel(CancellationRequestDto body) {

@@ -13,6 +13,10 @@ public class AlterationRequestDto {
 
     private Long reservationId;
 
+    private Long customerId;
+
+    private Long roomId;
+
     private LocalDate checkInDate;
 
     private LocalDate checkOutDate;

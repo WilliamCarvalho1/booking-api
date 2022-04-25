@@ -53,4 +53,14 @@ public class RestExceptionHandler {
                 .code(HttpStatus.BAD_REQUEST.value())
                 .build();
     }
+
+    @ExceptionHandler(CustomerDoesNotMatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCustomerDoesNotMatchException(CustomerDoesNotMatchException ex) {
+        return ErrorResponse.builder()
+                .message(ex.getMessage())
+                .code(HttpStatus.BAD_REQUEST.value())
+                .build();
+    }
+
 }
