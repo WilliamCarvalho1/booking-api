@@ -9,6 +9,7 @@
 - The room's number is its id.
 - The rooms have to be previously inserted in the database, so the API can work properly.
 - The customers (guests) have to be previously inserted in the database, so the API can work properly.
+- The Cancel endpoint just changes the status of the reservation to "canceled", so it remains logged.
 - Flyway is used to migrate the database, so we can test the API.
 - The database runs in a Docker's MariaDB container.
 - Due to unit testing the whole API is very time-consuming, I've just written a few unit tests.
