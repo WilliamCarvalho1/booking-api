@@ -74,9 +74,6 @@ class BookingServiceTest {
 
         var response = service.create(requestMock);
 
-        // Because the test is mocked, it doesn't access the database, so it doesn't generate the reservationID
-        response.setReservationId(1L);
-
         assertEquals(responseMock, response);
 
     }
