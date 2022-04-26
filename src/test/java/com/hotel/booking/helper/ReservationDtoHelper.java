@@ -44,7 +44,7 @@ public class ReservationDtoHelper {
 
     public static ReservationResponseDto getModifiedReservationResponseDto() {
         var dto = getReservationResponseDto();
-        dto.setStatus("modified");
+        dto.setStatus("altered");
 
         return dto;
     }
