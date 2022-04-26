@@ -11,8 +11,8 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "reservation")
 public class Reservation {
 

@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
-@Table(name = "room")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "room")
 public class Room {
 
     @Id

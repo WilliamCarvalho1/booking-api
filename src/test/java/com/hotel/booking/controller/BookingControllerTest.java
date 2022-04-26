@@ -1,5 +1,7 @@
 package com.hotel.booking.controller;
 
+import com.hotel.booking.dto.AlterationRequestDto;
+import com.hotel.booking.dto.CancellationRequestDto;
 import com.hotel.booking.dto.ReservationRequestDto;
 import com.hotel.booking.service.BookingService;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +15,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hotel.booking.helper.ReservationDtoHelper.getReservationRequestDto;
-import static com.hotel.booking.helper.ReservationDtoHelper.getReservationResponseDto;
+import static com.hotel.booking.helper.AlterationDtoHelper.getAlterationRequestDto;
+import static com.hotel.booking.helper.ReservationDtoHelper.*;
 import static com.hotel.booking.mapper.CheckAvailabilityMapper.availableDatesToDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,13 +72,31 @@ class BookingControllerTest {
     @DisplayName("Should modify a reservation")
     void shouldModifyReservation() {
 
-        var requestMock = getReservationRequestDto();
+        var requestMock = getAlterationRequestDto();
         var responseMock = getReservationResponseDto();
 
-        when(service.create(any(ReservationRequestDto.class)))
+        when(service.modify(any(AlterationRequestDto.class)))
                 .thenReturn(responseMock);
 
-        var response = controller.create(requestMock);
+        var response = controller.modify(requestMock);
+
+        assertEquals(responseMock, response);
+    }
+
+    @Test
+    @DisplayName("Should cancel a reservation")
+    void shouldCancelReservation() {
+
+        var requestMock = CancellationRequestDto.builder()
+                .reservationId(1L)
+                .build();
+
+        var responseMock = getCanceledReservationResponseDto();
+
+        when(service.cancel(any(CancellationRequestDto.class)))
+                .thenReturn(responseMock);
+
+        var response = controller.cancel(requestMock);
 
         assertEquals(responseMock, response);
     }
