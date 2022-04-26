@@ -36,9 +36,15 @@ public class ReservationDtoHelper {
     }
 
     public static ReservationResponseDto getCanceledReservationResponseDto() {
-
         var dto = getReservationResponseDto();
         dto.setStatus("canceled");
+
+        return dto;
+    }
+
+    public static ReservationResponseDto getModifiedReservationResponseDto() {
+        var dto = getReservationResponseDto();
+        dto.setStatus("modified");
 
         return dto;
     }

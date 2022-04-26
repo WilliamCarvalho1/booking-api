@@ -73,7 +73,7 @@ class BookingControllerTest {
     void shouldModifyReservation() {
 
         var requestMock = getAlterationRequestDto();
-        var responseMock = getReservationResponseDto();
+        var responseMock = getModifiedReservationResponseDto();
 
         when(service.modify(any(AlterationRequestDto.class)))
                 .thenReturn(responseMock);
