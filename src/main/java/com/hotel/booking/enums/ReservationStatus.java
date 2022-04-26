@@ -1,8 +1,10 @@
 package com.hotel.booking.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum ReservationStatus {
 
     ACTIVE("active"),
@@ -11,9 +13,5 @@ public enum ReservationStatus {
     FINISHED("finished");
 
     private final String status;
-
-    ReservationStatus(String status) {
-        this.status = status;
-    }
 
 }

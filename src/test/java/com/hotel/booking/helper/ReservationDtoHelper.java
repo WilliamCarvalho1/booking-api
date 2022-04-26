@@ -35,4 +35,21 @@ public class ReservationDtoHelper {
                 .build();
     }
 
+    public static ReservationResponseDto getCanceledReservationResponseDto() {
+
+        return ReservationResponseDto.builder()
+                .reservationId(1L)
+                .firstName("Michael")
+                .lastName("Jordan")
+                .phone("1234-1234")
+                .email("michael.jordan@email.com")
+                .bookingDate(LocalDate.now())
+                .checkInDate(LocalDate.parse("2022-05-08"))
+                .checkOutDate(LocalDate.parse("2022-05-10"))
+                .roomId(1L)
+                .status("canceled")
+                .totalValue(BigDecimal.valueOf(200))
+                .build();
+    }
+
 }
