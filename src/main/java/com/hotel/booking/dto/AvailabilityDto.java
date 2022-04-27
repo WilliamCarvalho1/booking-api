@@ -9,8 +9,10 @@ import java.util.List;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class CheckAvailabilityResponseDto {
+@ToString
+public class AvailabilityDto {
 
-    List<LocalDate> availableDates;
+    Long roomId;
+    List<LocalDate> dates;
 
 }

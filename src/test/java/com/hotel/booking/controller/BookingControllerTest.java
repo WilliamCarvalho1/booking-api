@@ -1,6 +1,7 @@
 package com.hotel.booking.controller;
 
 import com.hotel.booking.dto.AlterationRequestDto;
+import com.hotel.booking.dto.AvailabilityDto;
 import com.hotel.booking.dto.CancellationRequestDto;
 import com.hotel.booking.dto.ReservationRequestDto;
 import com.hotel.booking.service.BookingService;
@@ -12,12 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.hotel.booking.helper.AlterationDtoHelper.getAlterationRequestDto;
+import static com.hotel.booking.helper.AvailabilityDtoHelper.getAvailabilityDto;
 import static com.hotel.booking.helper.ReservationDtoHelper.*;
-import static com.hotel.booking.mapper.CheckAvailabilityMapper.availableDatesToDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -39,16 +39,12 @@ class BookingControllerTest {
         var checkInDate = LocalDate.parse("2022-05-08");
         var checkOutDate = LocalDate.parse("2022-05-10");
 
-        List<LocalDate> dates = new ArrayList<>(0);
-        dates.add(checkInDate);
-        dates.add(checkOutDate);
+        List<AvailabilityDto> responseMock = getAvailabilityDto(checkInDate, checkOutDate);
 
-        var responseMock = availableDatesToDto(dates);
-
-        when(service.getRoomAvailability(any(LocalDate.class), any(LocalDate.class), any(Long.class)))
+        when(service.getRoomAvailability(any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(responseMock);
 
-        var response = controller.checkAvailability(checkInDate, checkOutDate, 1L);
+        var response = controller.checkAvailability(checkInDate, checkOutDate);
 
         assertEquals(responseMock, response);
     }

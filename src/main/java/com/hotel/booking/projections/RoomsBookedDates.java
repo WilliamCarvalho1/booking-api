@@ -2,7 +2,9 @@ package com.hotel.booking.projections;
 
 import java.time.LocalDate;
 
-public interface StartAndEndDates {
+public interface RoomsBookedDates {
+
+    Long getRoomId();
 
     LocalDate getCheckInDate();
 

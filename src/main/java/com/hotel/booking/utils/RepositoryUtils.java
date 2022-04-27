@@ -6,7 +6,7 @@ import com.hotel.booking.exception.RoomNotAvailableException;
 import com.hotel.booking.model.Customer;
 import com.hotel.booking.model.Reservation;
 import com.hotel.booking.model.Room;
-import com.hotel.booking.projections.StartAndEndDates;
+import com.hotel.booking.projections.RoomsBookedDates;
 import com.hotel.booking.repository.CustomerRepository;
 import com.hotel.booking.repository.ReservationRepository;
 import com.hotel.booking.repository.RoomRepository;
@@ -43,6 +43,16 @@ public class RepositoryUtils {
         return room;
     }
 
+    public List<Room> getRooms() {
+        var room = roomRepository.findUnblockedRooms();
+
+        if (room.isEmpty()) {
+            throw new RoomNotAvailableException("No rooms available");
+        }
+
+        return room;
+    }
+
     public Reservation getReservation(Long reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationDoesNotExistException("There is no reservation with id: " + reservationId));
@@ -52,8 +62,8 @@ public class RepositoryUtils {
         reservationRepository.saveAndFlush(reservation);
     }
 
-    public List<StartAndEndDates> findUnavailableDates(Long roomId) {
-        return reservationRepository.findUnavailableDates(roomId);
+    public List<RoomsBookedDates> findUnavailableDates() {
+        return reservationRepository.findUnavailableDates();
     }
 
 }

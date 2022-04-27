@@ -5,9 +5,8 @@ import com.hotel.booking.enums.ReservationStatus;
 import com.hotel.booking.exception.CustomerDoesNotMatchException;
 import com.hotel.booking.exception.DateNotAvailableException;
 import com.hotel.booking.exception.ReservationDoesNotExistException;
-import com.hotel.booking.mapper.AlterationMapper;
 import com.hotel.booking.mapper.ReservationMapper;
-import com.hotel.booking.projections.StartAndEndDates;
+import com.hotel.booking.utils.BookingUtils;
 import com.hotel.booking.utils.RepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static com.hotel.booking.utils.BookingUtils.*;
+import static com.hotel.booking.mapper.AlterationMapper.alterationRequestDtoToEntity;
 
 @Service
 @Transactional
@@ -26,27 +25,30 @@ public class BookingService {
     @Autowired
     private RepositoryUtils repositoryUtils;
 
-    public CheckAvailabilityResponseDto getRoomAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+    @Autowired
+    private BookingUtils bookingUtils;
 
-        var room = repositoryUtils.getRoom(roomId);
+    public List<AvailabilityDto> getRoomAvailability(LocalDate checkInDate, LocalDate checkOutDate) {
 
-        checkBookingDatesRestrictions(checkInDate, checkOutDate);
+        var rooms = repositoryUtils.getRooms();
 
-        List<StartAndEndDates> reservedDates = repositoryUtils.findUnavailableDates(room.getId());
+        bookingUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
 
-        var unavailableDates = getUnavailablePeriods(reservedDates);
+        var bookedDates = repositoryUtils.findUnavailableDates();
 
-        var desiredPeriod = getPeriod(checkInDate, checkOutDate);
+        var unavailablePeriods = bookingUtils.getUnavailablePeriods(bookedDates, rooms);
 
-        return getAvailableDates(unavailableDates, desiredPeriod);
+        var desiredPeriod = bookingUtils.getPeriod(checkInDate, checkOutDate);
+
+        return bookingUtils.getAvailableDates(unavailablePeriods, desiredPeriod);
     }
 
     public ReservationResponseDto create(ReservationRequestDto body) {
 
-        checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
-        checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
+        bookingUtils.checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
+        bookingUtils.checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
 
-        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
+        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate());
 
         var room = repositoryUtils.getRoom(body.getRoomId());
 
@@ -61,8 +63,8 @@ public class BookingService {
 
     public ReservationResponseDto modify(AlterationRequestDto body) {
 
-        checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
-        checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
+        bookingUtils.checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
+        bookingUtils.checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
 
         var reservation = repositoryUtils.getReservation(body.getReservationId());
 
@@ -74,9 +76,9 @@ public class BookingService {
 
         var room = repositoryUtils.getRoom(body.getRoomId());
 
-        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), room.getId());
+        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate());
 
-        reservation = AlterationMapper.alterationRequestDtoToEntity(body, reservation, room);
+        reservation = alterationRequestDtoToEntity(body, reservation, room);
 
         repositoryUtils.save(reservation);
 
@@ -100,16 +102,18 @@ public class BookingService {
         return ReservationMapper.entityToDto(reservation, repositoryUtils.getCustomer(reservation.getCustomerId()));
     }
 
-    private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+    private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate) {
 
-        var availableDates = getRoomAvailability(checkInDate, checkOutDate, roomId);
-        var bookingPeriod = getPeriod(checkInDate, checkOutDate);
+        var availableDates = getRoomAvailability(checkInDate, checkOutDate);
+        var bookingPeriod = bookingUtils.getPeriod(checkInDate, checkOutDate);
 
-        bookingPeriod.forEach(date -> {
-            if (!availableDates.getAvailableDates().contains(date)) {
-                throw new DateNotAvailableException(date + " is already booked.");
-            }
-        });
+        availableDates.forEach(room -> room.getDates()
+                .forEach(availableDate -> {
+                    if (!bookingPeriod.contains(availableDate)) {
+                        throw new DateNotAvailableException(availableDate + " is already booked.");
+                    }
+                }));
+
     }
 
 }

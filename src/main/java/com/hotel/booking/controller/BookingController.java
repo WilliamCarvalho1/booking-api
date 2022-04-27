@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/reservation")
@@ -18,10 +19,9 @@ public class BookingController {
 
     @GetMapping("/check-availability/{roomId}/{checkInDate}/{checkOutDate}")
     @ResponseStatus(HttpStatus.OK)
-    public AvailabilityResponseDto checkAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
-                                                          @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate,
-                                                          @PathVariable Long roomId) {
-        return bookingService.getRoomAvailability(checkInDate, checkOutDate, roomId);
+    public List<AvailabilityDto> checkAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
+                                                   @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate) {
+        return bookingService.getRoomAvailability(checkInDate, checkOutDate);
     }
 
     @PostMapping("/create")
