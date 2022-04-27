@@ -1,12 +1,12 @@
 package com.hotel.booking.dto;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class CancellationRequestDto {
 
     private Long reservationId;
