@@ -20,7 +20,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     public CheckAvailabilityResponseDto checkAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
                                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate,
-                                                          @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Long roomId) {
+                                                          @PathVariable Long roomId) {
         return bookingService.getRoomAvailability(checkInDate, checkOutDate, roomId);
     }
 
