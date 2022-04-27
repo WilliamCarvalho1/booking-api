@@ -18,7 +18,7 @@ public class BookingController {
 
     @GetMapping("/check-availability/{roomId}/{checkInDate}/{checkOutDate}")
     @ResponseStatus(HttpStatus.OK)
-    public CheckAvailabilityResponseDto checkAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
+    public AvailabilityResponseDto checkAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
                                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate,
                                                           @PathVariable Long roomId) {
         return bookingService.getRoomAvailability(checkInDate, checkOutDate, roomId);
