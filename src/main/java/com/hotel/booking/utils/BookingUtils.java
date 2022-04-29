@@ -4,7 +4,7 @@ import com.hotel.booking.dto.AvailabilityDto;
 import com.hotel.booking.exception.DateNotAvailableException;
 import com.hotel.booking.exception.InvalidCheckInDateException;
 import com.hotel.booking.model.Room;
-import com.hotel.booking.projections.RoomsBookedDates;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -17,6 +17,9 @@ import java.util.Objects;
 @Component
 public class BookingUtils {
 
+    @Autowired
+    private RepositoryUtils repositoryUtils;
+
     public List<LocalDate> getPeriod(LocalDate checkInDate, LocalDate checkOutDate) {
         return checkInDate.datesUntil(checkOutDate.plusDays(1L)).toList();
     }
@@ -28,23 +31,25 @@ public class BookingUtils {
         return roomPrice.multiply(BigDecimal.valueOf(numberOfDays));
     }
 
-    public List<AvailabilityDto> getUnavailablePeriods(List<RoomsBookedDates> roomsBookedDates, List<Room> rooms) {
+    public List<AvailabilityDto> getUnavailableDates(List<Room> rooms) {
 
-        List<Long> filteredRoomIds = new ArrayList<>(0);
+        List<Long> roomIds = new ArrayList<>(0);
 
-        rooms.forEach(room -> filteredRoomIds.add(room.getId()));
+        rooms.forEach(room -> roomIds.add(room.getId()));
 
-        List<AvailabilityDto> mergedRoomIdsAndDates = new ArrayList<>(0);
+        List<AvailabilityDto> unavailableDatesForEachRoomList = new ArrayList<>(0);
 
         List<LocalDate> dates = new ArrayList<>(0);
 
-        filteredRoomIds.forEach(id -> {
+        var roomsBookedDates = repositoryUtils.findUnavailableDates();
+
+        roomIds.forEach(id -> {
             roomsBookedDates.forEach(room -> {
                 if (Objects.equals(id, room.getRoomId())) {
                     dates.addAll(getPeriod(room.getCheckInDate(), room.getCheckOutDate()));
                 }
             });
-            mergedRoomIdsAndDates.add(AvailabilityDto.builder()
+            unavailableDatesForEachRoomList.add(AvailabilityDto.builder()
                     .roomId(id)
                     .dates(List.copyOf(dates))
                     .build()
@@ -52,36 +57,39 @@ public class BookingUtils {
             dates.clear();
         });
 
-        return mergedRoomIdsAndDates;
+        return unavailableDatesForEachRoomList;
     }
 
-    public List<AvailabilityDto> getAvailableDates(List<AvailabilityDto> roomsUnavailableDates,
-                                                   List<LocalDate> desiredPeriod) {
+    public List<AvailabilityDto> getAvailableDates(List<Room> rooms, LocalDate checkInDate, LocalDate checkOutDate) {
 
-        List<AvailabilityDto> roomsAvailableDates = new ArrayList<>(0);
+        var unavailableDatesForEachRoomList = getUnavailableDates(rooms);
+
+        var desiredDates = getPeriod(checkInDate, checkOutDate);
+
+        List<AvailabilityDto> availableDatesForEachRoomList = new ArrayList<>(0);
 
         List<LocalDate> dates = new ArrayList<>(0);
 
-        roomsUnavailableDates.forEach(roomsUnavailableDate -> {
-            desiredPeriod.forEach(date -> {
-                if (!roomsUnavailableDate.getDates().contains(date)) {
+        unavailableDatesForEachRoomList.forEach(room -> {
+            desiredDates.forEach(date -> {
+                if (!room.getDates().contains(date)) {
                     dates.add(date);
                 }
             });
             if (!dates.isEmpty()) {
-                roomsAvailableDates.add(AvailabilityDto.builder()
-                        .roomId(roomsUnavailableDate.getRoomId())
+                availableDatesForEachRoomList.add(AvailabilityDto.builder()
+                        .roomId(room.getRoomId())
                         .dates(List.copyOf(dates))
                         .build());
             }
             dates.clear();
         });
 
-        if (roomsAvailableDates.isEmpty()) {
+        if (availableDatesForEachRoomList.isEmpty()) {
             throw new DateNotAvailableException("No dates available for this period.");
         }
 
-        return roomsAvailableDates;
+        return availableDatesForEachRoomList;
     }
 
     public void checkBookingDatesRestrictions(LocalDate checkInDate, LocalDate checkOutDate) {

@@ -42,26 +42,16 @@ public class BookingService {
 
         bookingUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
 
-        var bookedDates = repositoryUtils.findUnavailableDates();
-
-        var unavailablePeriods = bookingUtils.getUnavailablePeriods(bookedDates, rooms);
-
-        var desiredPeriod = bookingUtils.getPeriod(checkInDate, checkOutDate);
-
-        return bookingUtils.getAvailableDates(unavailablePeriods, desiredPeriod);
+        return bookingUtils.getAvailableDates(rooms, checkInDate, checkOutDate);
     }
 
     public ReservationResponseDto create(ReservationRequestDto body) {
 
-        bookingUtils.checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
+        checkRestrictions(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
         bookingUtils.checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
 
-        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
-
         var room = repositoryUtils.getRoom(body.getRoomId());
-
         var customer = repositoryUtils.getCustomer(body.getCustomerId());
-
         var reservation = ReservationMapper.dtoToEntity(body, room);
 
         repositoryUtils.save(reservation);
@@ -71,22 +61,18 @@ public class BookingService {
 
     public ReservationResponseDto modify(AlterationRequestDto body) {
 
-        bookingUtils.checkBookingDatesRestrictions(body.getCheckInDate(), body.getCheckOutDate());
+        checkRestrictions(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
         bookingUtils.checkIfPeriodIsMoreThanThreeDays(body.getCheckInDate(), body.getCheckOutDate());
 
-        var reservation = repositoryUtils.getReservation(body.getReservationId());
-
+        var room = repositoryUtils.getRoom(body.getRoomId());
         var customer = repositoryUtils.getCustomer(body.getCustomerId());
+        var reservation = repositoryUtils.getReservation(body.getReservationId());
 
         if (!Objects.equals(reservation.getCustomerId(), customer.getId())) {
             throw new CustomerDoesNotMatchException("Provided customer does not match the reservation's customer.");
         }
 
-        var room = repositoryUtils.getRoom(body.getRoomId());
-
-        checkIfPeriodIsAvailable(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
-
-        reservation = alterationRequestDtoToEntity(body, reservation, room);
+        reservation = alterationRequestDtoToEntity(body, customer.getId(), room);
 
         repositoryUtils.save(reservation);
 
@@ -110,6 +96,12 @@ public class BookingService {
         return ReservationMapper.entityToDto(reservation, repositoryUtils.getCustomer(reservation.getCustomerId()));
     }
 
+    private void checkRestrictions(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+
+        bookingUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
+        checkIfPeriodIsAvailable(checkInDate, checkOutDate, roomId);
+    }
+
     private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
         var availableDates = getRoomAvailability(checkInDate, checkOutDate, roomId);
@@ -121,7 +113,6 @@ public class BookingService {
                         throw new DateNotAvailableException(availableDate + " is already booked.");
                     }
                 }));
-
     }
 
 }
