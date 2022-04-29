@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,19 +28,19 @@ public class BookingController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponseDto create(@RequestBody ReservationRequestDto body) {
+    public ReservationResponseDto create(@Valid @RequestBody ReservationRequestDto body) {
         return bookingService.create(body);
     }
 
     @PutMapping("/modify")
     @ResponseStatus(HttpStatus.OK)
-    public ReservationResponseDto modify(@RequestBody AlterationRequestDto body) {
+    public ReservationResponseDto modify(@Valid @RequestBody AlterationRequestDto body) {
         return bookingService.modify(body);
     }
 
     @PutMapping("/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public ReservationResponseDto cancel(@RequestBody CancellationRequestDto body) {
+    public ReservationResponseDto cancel(@Valid @RequestBody CancellationRequestDto body) {
         return bookingService.cancel(body);
     }
 
