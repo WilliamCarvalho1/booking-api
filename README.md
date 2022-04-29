@@ -31,3 +31,7 @@
 - DROP TABLE room;
 
 - DELETE FROM flyway_schema_history;
+
+## To test the API with more than one room available, set flag "blocked" set to false. E.g.:
+- UPDATE room SET blocked = 0 WHERE id = 2;
+- Or create a new Flyway file version.
