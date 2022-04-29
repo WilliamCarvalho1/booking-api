@@ -4,6 +4,7 @@ import com.hotel.booking.dto.AvailabilityDto;
 import com.hotel.booking.dto.CancellationRequestDto;
 import com.hotel.booking.helper.CustomerHelper;
 import com.hotel.booking.helper.RoomHelper;
+import com.hotel.booking.model.Room;
 import com.hotel.booking.utils.BookingUtils;
 import com.hotel.booking.utils.RepositoryUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +48,7 @@ class BookingServiceTest {
 
         List<AvailabilityDto> responseMock = getAvailabilityDto(checkInDate, checkOutDate);
 
-        when(bookingUtils.getAvailableDates(anyList(), anyList()))
+        when(bookingUtils.getAvailableDates(anyList(), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(responseMock);
 
         var response = service.getRoomAvailability(checkInDate, checkOutDate, null);

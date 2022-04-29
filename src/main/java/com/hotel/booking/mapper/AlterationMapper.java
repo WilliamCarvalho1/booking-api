@@ -14,14 +14,14 @@ import static com.hotel.booking.utils.BookingUtils.getTotalValue;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AlterationMapper {
 
-    public static Reservation alterationRequestDtoToEntity(AlterationRequestDto body, Reservation reservation, Room room) {
+    public static Reservation alterationRequestDtoToEntity(AlterationRequestDto body, Long customerId, Room room) {
         return Reservation.builder()
                 .id(body.getReservationId())
                 .bookingDate(LocalDate.now())
                 .checkInDate(body.getCheckInDate())
                 .checkOutDate(body.getCheckOutDate())
                 .roomId(room.getId())
-                .customerId(reservation.getCustomerId())
+                .customerId(customerId)
                 .totalValue(getTotalValue(room.getPrice(), body.getCheckInDate(), body.getCheckOutDate()))
                 .status(ReservationStatus.ALTERED.getStatus())
                 .build();

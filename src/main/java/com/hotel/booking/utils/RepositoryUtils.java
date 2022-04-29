@@ -44,13 +44,13 @@ public class RepositoryUtils {
     }
 
     public List<Room> getRooms() {
-        var room = roomRepository.findUnblockedRooms();
+        var rooms = roomRepository.findUnblockedRooms();
 
-        if (room.isEmpty()) {
+        if (rooms.isEmpty()) {
             throw new RoomNotAvailableException("No rooms available");
         }
 
-        return room;
+        return rooms;
     }
 
     public Reservation getReservation(Long reservationId) {

@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    @Query("SELECT room from Room room where room.id = ?1 and room.blocked = 'false'")
+    @Query("SELECT room from Room room where room.blocked = 'false' and room.id = ?1")
     Room findUnblockedRoom(Long id);
 
     @Query("SELECT room from Room room where room.blocked = 'false'")
