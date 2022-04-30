@@ -33,24 +33,18 @@ public class BookingUtils {
 
     public List<AvailabilityDto> getUnavailableDates(List<Room> rooms) {
 
-        List<Long> roomIds = new ArrayList<>(0);
-
-        rooms.forEach(room -> roomIds.add(room.getId()));
-
         List<AvailabilityDto> unavailableDatesForEachRoomList = new ArrayList<>(0);
 
         List<LocalDate> dates = new ArrayList<>(0);
 
         var roomsBookedDates = repositoryUtils.findUnavailableDates();
 
-        roomIds.forEach(id -> {
-            roomsBookedDates.forEach(room -> {
-                if (Objects.equals(id, room.getRoomId())) {
-                    dates.addAll(getPeriod(room.getCheckInDate(), room.getCheckOutDate()));
-                }
-            });
+        rooms.forEach(room -> {
+            roomsBookedDates.stream()
+                    .filter(rbd -> Objects.equals(room.getId(), rbd.getRoomId()))
+                    .forEach(rbd -> dates.addAll(getPeriod(rbd.getCheckInDate(), rbd.getCheckOutDate())));
             unavailableDatesForEachRoomList.add(AvailabilityDto.builder()
-                    .roomId(id)
+                    .roomId(room.getId())
                     .dates(List.copyOf(dates))
                     .build()
             );
@@ -71,11 +65,9 @@ public class BookingUtils {
         List<LocalDate> dates = new ArrayList<>(0);
 
         unavailableDatesForEachRoomList.forEach(room -> {
-            desiredDates.forEach(date -> {
-                if (!room.getDates().contains(date)) {
-                    dates.add(date);
-                }
-            });
+            desiredDates.stream()
+                    .filter(date -> !room.getDates().contains(date))
+                    .forEach(dates::add);
             if (!dates.isEmpty()) {
                 availableDatesForEachRoomList.add(AvailabilityDto.builder()
                         .roomId(room.getRoomId())
