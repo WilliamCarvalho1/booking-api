@@ -42,7 +42,7 @@ class BookingControllerTest {
 
         List<AvailabilityDto> responseMock = getAvailabilityDto(checkInDate, checkOutDate);
 
-        when(service.getRoomAvailability(any(LocalDate.class), any(LocalDate.class), anyLong()))
+        when(service.getAvailability(any(LocalDate.class), any(LocalDate.class), anyLong()))
                 .thenReturn(responseMock);
 
         var response = controller.checkAvailability(checkInDate, checkOutDate, 1L);

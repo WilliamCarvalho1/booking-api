@@ -31,6 +31,17 @@ public class BookingUtils {
         return roomPrice.multiply(BigDecimal.valueOf(numberOfDays));
     }
 
+    public List<Room> getRooms(Long roomId) {
+        List<Room> rooms = new ArrayList<>(0);
+
+        if (roomId == null) {
+            rooms.addAll(repositoryUtils.getRooms());
+        } else {
+            rooms.add(repositoryUtils.getRoom(roomId));
+        }
+        return rooms;
+    }
+
     public List<AvailabilityDto> getUnavailableDates(List<Room> rooms) {
 
         List<AvailabilityDto> unavailableDatesForEachRoomList = new ArrayList<>(0);

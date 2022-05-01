@@ -6,7 +6,6 @@ import com.hotel.booking.exception.CustomerDoesNotMatchException;
 import com.hotel.booking.exception.DateNotAvailableException;
 import com.hotel.booking.exception.ReservationDoesNotExistException;
 import com.hotel.booking.mapper.ReservationMapper;
-import com.hotel.booking.model.Room;
 import com.hotel.booking.utils.BookingUtils;
 import com.hotel.booking.utils.RepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,15 +28,9 @@ public class BookingService {
     @Autowired
     private BookingUtils bookingUtils;
 
-    public List<AvailabilityDto> getRoomAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+    public List<AvailabilityDto> getAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
-        List<Room> rooms = new ArrayList<>(0);
-
-        if (roomId == null) {
-            rooms.addAll(repositoryUtils.getRooms());
-        } else {
-            rooms.add(repositoryUtils.getRoom(roomId));
-        }
+        var rooms = bookingUtils.getRooms(roomId);
 
         bookingUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
 
@@ -104,7 +96,7 @@ public class BookingService {
 
     private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
-        var availableDates = getRoomAvailability(checkInDate, checkOutDate, roomId);
+        var availableDates = getAvailability(checkInDate, checkOutDate, roomId);
         var bookingPeriod = bookingUtils.getPeriod(checkInDate, checkOutDate);
 
         availableDates.forEach(room -> room.getDates()

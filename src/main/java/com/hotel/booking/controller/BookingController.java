@@ -23,7 +23,7 @@ public class BookingController {
     public List<AvailabilityDto> checkAvailability(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
                                                    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate,
                                                    @RequestParam(required = false) Long roomId) {
-        return bookingService.getRoomAvailability(checkInDate, checkOutDate, roomId);
+        return bookingService.getAvailability(checkInDate, checkOutDate, roomId);
     }
 
     @PostMapping("/create")
