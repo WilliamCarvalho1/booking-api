@@ -1,4 +1,4 @@
-package com.hotel.booking.exception.dto;
+package com.hotel.booking.exception.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ValidationErrorResponseDto {
+public class ValidationErrorResponse {
 
     private String field;
     private String error;

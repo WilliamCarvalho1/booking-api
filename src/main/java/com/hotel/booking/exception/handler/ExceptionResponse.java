@@ -1,4 +1,4 @@
-package com.hotel.booking.exception.dto;
+package com.hotel.booking.exception.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExceptionResponseDto {
+public class ExceptionResponse {
 
     private String message;
     private Integer code;
