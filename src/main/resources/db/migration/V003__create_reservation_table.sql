@@ -12,8 +12,8 @@ CREATE TABLE reservation(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO reservation (customer_id, room_id, booking_date, check_in_date, check_out_date, status, total_value)
-VALUES (1, 1, "2022/04/18", "2022/05/01", "2022/05/04", "active", 300.00);
+VALUES (1, 1, "2022/04/18", "2022/05/06", "2022/05/09", "active", 300.00);
 INSERT INTO reservation (customer_id, room_id, booking_date, check_in_date, check_out_date, status, total_value)
-VALUES (2, 1, "2022/04/18", "2022/05/07", "2022/05/09", "active", 200.00);
+VALUES (2, 1, "2022/04/22", "2022/05/10", "2022/05/12", "active", 200.00);
 INSERT INTO reservation (customer_id, room_id, booking_date, check_in_date, check_out_date, status, total_value)
-VALUES (3, 1, "2022/04/27", "2022/05/10", "2022/05/13", "active", 300.00);
+VALUES (3, 1, "2022/04/27", "2022/05/20", "2022/05/23", "active", 300.00);
