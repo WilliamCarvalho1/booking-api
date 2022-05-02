@@ -18,7 +18,7 @@ public class BookingUtils {
     @Autowired
     private RepositoryUtils repositoryUtils;
 
-    public List<LocalDate> getPeriod(LocalDate checkInDate, LocalDate checkOutDate) {
+    private List<LocalDate> getPeriod(LocalDate checkInDate, LocalDate checkOutDate) {
 
         return checkInDate.datesUntil(checkOutDate.plusDays(1L)).toList();
     }
@@ -43,7 +43,7 @@ public class BookingUtils {
         return rooms;
     }
 
-    public List<AvailabilityDto> getUnavailableDates(List<Room> rooms) {
+    private List<AvailabilityDto> getUnavailableDates(List<Room> rooms) {
 
         List<AvailabilityDto> unavailableDatesForEachRoomList = new ArrayList<>(0);
 
