@@ -1,6 +1,7 @@
 package com.hotel.booking.exception.handler;
 
 import com.hotel.booking.exception.*;
+import com.hotel.booking.exception.dto.ExceptionResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,8 +12,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(ReservationDoesNotExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleReservationDoesNotExistException(ReservationDoesNotExistException ex) {
-        return ErrorResponse.builder()
+    public ExceptionResponseDto handleReservationDoesNotExistException(ReservationDoesNotExistException ex) {
+        return ExceptionResponseDto.builder()
                 .message(ex.getMessage())
                 .code(HttpStatus.NOT_FOUND.value())
                 .build();
@@ -20,8 +21,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(DateNotAvailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleDateNotAvailableException(DateNotAvailableException ex) {
-        return ErrorResponse.builder()
+    public ExceptionResponseDto handleDateNotAvailableException(DateNotAvailableException ex) {
+        return ExceptionResponseDto.builder()
                 .message(ex.getMessage())
                 .code(HttpStatus.BAD_REQUEST.value())
                 .build();
@@ -29,8 +30,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException ex) {
-        return ErrorResponse.builder()
+    public ExceptionResponseDto handleCustomerNotFoundException(CustomerNotFoundException ex) {
+        return ExceptionResponseDto.builder()
                 .message(ex.getMessage())
                 .code(HttpStatus.NOT_FOUND.value())
                 .build();
@@ -38,8 +39,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(RoomNotAvailableException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleRoomNotAvailableException(RoomNotAvailableException ex) {
-        return ErrorResponse.builder()
+    public ExceptionResponseDto handleRoomNotAvailableException(RoomNotAvailableException ex) {
+        return ExceptionResponseDto.builder()
                 .message(ex.getMessage())
                 .code(HttpStatus.NOT_FOUND.value())
                 .build();
@@ -47,8 +48,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(InvalidCheckInDateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidCheckInDateException(InvalidCheckInDateException ex) {
-        return ErrorResponse.builder()
+    public ExceptionResponseDto handleInvalidCheckInDateException(InvalidCheckInDateException ex) {
+        return ExceptionResponseDto.builder()
                 .message(ex.getMessage())
                 .code(HttpStatus.BAD_REQUEST.value())
                 .build();
@@ -56,8 +57,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(CustomerDoesNotMatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCustomerDoesNotMatchException(CustomerDoesNotMatchException ex) {
-        return ErrorResponse.builder()
+    public ExceptionResponseDto handleCustomerDoesNotMatchException(CustomerDoesNotMatchException ex) {
+        return ExceptionResponseDto.builder()
                 .message(ex.getMessage())
                 .code(HttpStatus.BAD_REQUEST.value())
                 .build();

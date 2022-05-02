@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RequestErrorDto {
+public class ValidationErrorResponseDto {
 
     private String field;
     private String error;

@@ -1,6 +1,6 @@
 package com.hotel.booking.exception.handler;
 
-import com.hotel.booking.exception.dto.RequestErrorDto;
+import com.hotel.booking.exception.dto.ValidationErrorResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -22,17 +22,18 @@ public class ValidationErrorHandler {
 
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public List<RequestErrorDto> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+    public List<ValidationErrorResponseDto> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
 
-        List<RequestErrorDto> errorsDto = new ArrayList<>(0);
+        List<ValidationErrorResponseDto> validationErrorsDto = new ArrayList<>(0);
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
 
         fieldErrors.forEach(x -> {
             String message = messageSource.getMessage(x, LocaleContextHolder.getLocale());
-            RequestErrorDto error = new RequestErrorDto(x.getField(), message);
-            errorsDto.add(error);
+            ValidationErrorResponseDto error = new ValidationErrorResponseDto(x.getField(), message);
+            validationErrorsDto.add(error);
         });
-        return errorsDto;
+
+        return validationErrorsDto;
     }
 
 }
