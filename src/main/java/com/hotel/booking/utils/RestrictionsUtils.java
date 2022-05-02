@@ -14,6 +14,24 @@ public class RestrictionsUtils {
     @Autowired
     private BookingUtils bookingUtils;
 
+    private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
+
+        var rooms = bookingUtils.getRooms(roomId);
+
+        var availableDates = bookingUtils.getAvailableDates(rooms, checkInDate, checkOutDate);
+
+        if (availableDates.isEmpty()) {
+            throw new DateNotAvailableException("No dates available for this period.");
+        }
+    }
+
+    private void checkIfPeriodIsMoreThanThreeDays(LocalDate checkInDate, LocalDate checkOutDate) {
+
+        if (Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays() > 3) {
+            throw new InvalidCheckInDateException("Rooms cannot be reserved for more than 3 days.");
+        }
+    }
+
     public void checkRestrictions(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
         checkBookingDatesRestrictions(checkInDate, checkOutDate);
@@ -33,24 +51,6 @@ public class RestrictionsUtils {
         }
         if (checkInDate.equals(checkOutDate) || checkInDate.isAfter(checkOutDate)) {
             throw new InvalidCheckInDateException("Check-in date should not be equal or lesser than check-out date.");
-        }
-    }
-
-    private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
-
-        var rooms = bookingUtils.getRooms(roomId);
-
-        var availableDates = bookingUtils.getAvailableDates(rooms, checkInDate, checkOutDate);
-
-        if (availableDates.isEmpty()) {
-            throw new DateNotAvailableException("No dates available for this period.");
-        }
-    }
-
-    private void checkIfPeriodIsMoreThanThreeDays(LocalDate checkInDate, LocalDate checkOutDate) {
-
-        if (Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays() > 3) {
-            throw new InvalidCheckInDateException("Rooms cannot be reserved for more than 3 days.");
         }
     }
 

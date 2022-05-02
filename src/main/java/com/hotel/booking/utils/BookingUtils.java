@@ -23,26 +23,6 @@ public class BookingUtils {
         return checkInDate.datesUntil(checkOutDate.plusDays(1L)).toList();
     }
 
-    public static BigDecimal getTotalValue(BigDecimal roomPrice, LocalDate checkInDate, LocalDate checkOutDate) {
-
-        var numberOfDays = Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays();
-
-        return roomPrice.multiply(BigDecimal.valueOf(numberOfDays));
-    }
-
-    public List<Room> getRooms(Long roomId) {
-
-        List<Room> rooms = new ArrayList<>(0);
-
-        if (roomId == null) {
-            rooms.addAll(repositoryUtils.getRooms());
-        } else {
-            rooms.add(repositoryUtils.getRoom(roomId));
-        }
-
-        return rooms;
-    }
-
     private List<AvailabilityDto> getUnavailableDates(List<Room> rooms) {
 
         List<AvailabilityDto> unavailableDatesForEachRoomList = new ArrayList<>(0);
@@ -90,6 +70,26 @@ public class BookingUtils {
         });
 
         return availableDatesForEachRoomList;
+    }
+
+    public List<Room> getRooms(Long roomId) {
+
+        List<Room> rooms = new ArrayList<>(0);
+
+        if (roomId == null) {
+            rooms.addAll(repositoryUtils.getRooms());
+        } else {
+            rooms.add(repositoryUtils.getRoom(roomId));
+        }
+
+        return rooms;
+    }
+
+    public static BigDecimal getTotalValue(BigDecimal roomPrice, LocalDate checkInDate, LocalDate checkOutDate) {
+
+        var numberOfDays = Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays();
+
+        return roomPrice.multiply(BigDecimal.valueOf(numberOfDays));
     }
 
 }
