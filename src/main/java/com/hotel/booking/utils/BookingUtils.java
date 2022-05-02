@@ -32,6 +32,7 @@ public class BookingUtils {
     }
 
     public List<Room> getRooms(Long roomId) {
+
         List<Room> rooms = new ArrayList<>(0);
 
         if (roomId == null) {
