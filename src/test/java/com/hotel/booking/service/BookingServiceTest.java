@@ -2,11 +2,11 @@ package com.hotel.booking.service;
 
 import com.hotel.booking.dto.AvailabilityDto;
 import com.hotel.booking.dto.CancellationRequestDto;
-import com.hotel.booking.helper.AvailabilityDtoHelper;
 import com.hotel.booking.helper.CustomerHelper;
 import com.hotel.booking.helper.RoomHelper;
 import com.hotel.booking.utils.BookingUtils;
 import com.hotel.booking.utils.RepositoryUtils;
+import com.hotel.booking.utils.RestrictionsUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,10 +19,12 @@ import java.util.List;
 
 import static com.hotel.booking.helper.AlterationDtoHelper.getAlterationRequestDto;
 import static com.hotel.booking.helper.AvailabilityDtoHelper.getAvailabilityDto;
-import static com.hotel.booking.helper.ReservationDtoHelper.*;
+import static com.hotel.booking.helper.ReservationDtoHelper.getReservationRequestDto;
+import static com.hotel.booking.helper.ReservationDtoHelper.getReservationResponseDto;
 import static com.hotel.booking.helper.ReservationHelper.getReservation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +39,9 @@ class BookingServiceTest {
 
     @Mock
     private BookingUtils bookingUtils;
+
+    @Mock
+    private RestrictionsUtils restrictionsUtils;
 
     @Test
     @DisplayName("Should check reservation availability")
@@ -70,15 +75,6 @@ class BookingServiceTest {
         when(repositoryUtils.getCustomer(any(Long.class)))
                 .thenReturn(customerMock);
 
-        var roomsMock = List.of(roomMock);
-        when(bookingUtils.getRooms(anyLong()))
-                .thenReturn(roomsMock);
-
-        var availabilityDtoMock = AvailabilityDtoHelper.getAvailabilityDto(requestMock.getCheckInDate(),
-                requestMock.getCheckOutDate());
-        when(bookingUtils.getAvailableDates(anyList(), any(LocalDate.class), any(LocalDate.class)))
-                .thenReturn(availabilityDtoMock);
-
         var response = service.create(requestMock);
         response.setReservationId(1L);
 
@@ -90,7 +86,6 @@ class BookingServiceTest {
     void shouldModifyReservation() {
 
         var requestMock = getAlterationRequestDto();
-        var responseMock = getModifiedReservationResponseDto();
 
         var reservationMock = getReservation();
         when(repositoryUtils.getReservation(any(Long.class)))
@@ -104,15 +99,6 @@ class BookingServiceTest {
         when(repositoryUtils.getCustomer(any(Long.class)))
                 .thenReturn(customerMock);
 
-        var roomsMock = List.of(roomMock);
-        when(bookingUtils.getRooms(anyLong()))
-                .thenReturn(roomsMock);
-
-        var availabilityDtoMock = AvailabilityDtoHelper.getAvailabilityDto(requestMock.getCheckInDate(),
-                requestMock.getCheckOutDate());
-        when(bookingUtils.getAvailableDates(anyList(), any(LocalDate.class), any(LocalDate.class)))
-                .thenReturn(availabilityDtoMock);
-
         var response = service.modify(requestMock);
 
         assertEquals("altered", response.getStatus());
@@ -125,8 +111,6 @@ class BookingServiceTest {
         var requestMock = CancellationRequestDto.builder()
                 .reservationId(1L)
                 .build();
-
-        var responseMock = getCanceledReservationResponseDto();
 
         var reservationMock = getReservation();
         when(repositoryUtils.getReservation(any(Long.class)))
