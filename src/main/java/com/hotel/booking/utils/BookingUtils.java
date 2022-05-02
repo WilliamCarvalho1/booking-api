@@ -1,7 +1,6 @@
 package com.hotel.booking.utils;
 
 import com.hotel.booking.dto.AvailabilityDto;
-import com.hotel.booking.exception.DateNotAvailableException;
 import com.hotel.booking.exception.InvalidCheckInDateException;
 import com.hotel.booking.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,10 +86,6 @@ public class BookingUtils {
             }
             dates.clear();
         });
-
-        if (availableDatesForEachRoomList.isEmpty()) {
-            throw new DateNotAvailableException("No dates available for this period.");
-        }
 
         return availableDatesForEachRoomList;
     }
