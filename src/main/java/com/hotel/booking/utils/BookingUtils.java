@@ -1,7 +1,6 @@
 package com.hotel.booking.utils;
 
 import com.hotel.booking.dto.AvailabilityDto;
-import com.hotel.booking.exception.InvalidCheckInDateException;
 import com.hotel.booking.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,6 +39,7 @@ public class BookingUtils {
         } else {
             rooms.add(repositoryUtils.getRoom(roomId));
         }
+
         return rooms;
     }
 
@@ -90,28 +90,6 @@ public class BookingUtils {
         });
 
         return availableDatesForEachRoomList;
-    }
-
-    public void checkBookingDatesRestrictions(LocalDate checkInDate, LocalDate checkOutDate) {
-
-        var today = LocalDate.now();
-
-        if (today.equals(checkInDate) || today.isAfter(checkInDate)) {
-            throw new InvalidCheckInDateException("Check-in date should be at least one day after the booking day.");
-        }
-        if (checkInDate.isAfter(today.plusDays(30L))) {
-            throw new InvalidCheckInDateException("Check-in date should not be scheduled more than 30 days in advance.");
-        }
-        if (checkInDate.equals(checkOutDate) || checkInDate.isAfter(checkOutDate)) {
-            throw new InvalidCheckInDateException("Check-in date should not be equal or lesser than check-out date.");
-        }
-    }
-
-    public void checkIfPeriodIsMoreThanThreeDays(LocalDate checkInDate, LocalDate checkOutDate) {
-
-        if (Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays() > 3) {
-            throw new InvalidCheckInDateException("Rooms cannot be reserved for more than 3 days.");
-        }
     }
 
 }

@@ -8,10 +8,12 @@ import com.hotel.booking.exception.ReservationDoesNotExistException;
 import com.hotel.booking.mapper.ReservationMapper;
 import com.hotel.booking.utils.BookingUtils;
 import com.hotel.booking.utils.RepositoryUtils;
+import com.hotel.booking.utils.RestrictionsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -28,11 +30,14 @@ public class BookingService {
     @Autowired
     private BookingUtils bookingUtils;
 
+    @Autowired
+    private RestrictionsUtils restrictionsUtils;
+
     public List<AvailabilityDto> getAvailability(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
 
         var rooms = bookingUtils.getRooms(roomId);
 
-        bookingUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
+        restrictionsUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
 
         var availableDates = bookingUtils.getAvailableDates(rooms, checkInDate, checkOutDate);
 
@@ -45,7 +50,7 @@ public class BookingService {
 
     public ReservationResponseDto create(ReservationRequestDto body) {
 
-        checkRestrictions(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
+        restrictionsUtils.checkRestrictions(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
 
         var room = repositoryUtils.getRoom(body.getRoomId());
         var customer = repositoryUtils.getCustomer(body.getCustomerId());
@@ -71,7 +76,7 @@ public class BookingService {
                 .build();
         cancel(cancellationBody);
 
-        checkRestrictions(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
+        restrictionsUtils.checkRestrictions(body.getCheckInDate(), body.getCheckOutDate(), body.getRoomId());
 
         reservation = alterationRequestDtoToEntity(body, customer.getId(), room);
 
@@ -86,33 +91,16 @@ public class BookingService {
 
         var reservation = repositoryUtils.getReservation(reservationId);
 
-        if (!reservation.getStatus().equals(ReservationStatus.CANCELED.getStatus())
-                && !reservation.getStatus().equals(ReservationStatus.FINISHED.getStatus())) {
+        if (!reservation.getStatus().equals(ReservationStatus.CANCELED.getStatus()) &&
+                !reservation.getStatus().equals(ReservationStatus.FINISHED.getStatus())) {
             reservation.setStatus(ReservationStatus.CANCELED.getStatus());
+            reservation.setTotalValue(BigDecimal.ZERO);
             repositoryUtils.save(reservation);
         } else {
             throw new ReservationDoesNotExistException("Reservation " + reservationId + " does not exist");
         }
 
         return ReservationMapper.entityToDto(reservation, repositoryUtils.getCustomer(reservation.getCustomerId()));
-    }
-
-    private void checkRestrictions(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
-
-        bookingUtils.checkBookingDatesRestrictions(checkInDate, checkOutDate);
-        checkIfPeriodIsAvailable(checkInDate, checkOutDate, roomId);
-        bookingUtils.checkIfPeriodIsMoreThanThreeDays(checkInDate, checkOutDate);
-    }
-
-    private void checkIfPeriodIsAvailable(LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
-
-        var rooms = bookingUtils.getRooms(roomId);
-
-        var availableDates = bookingUtils.getAvailableDates(rooms, checkInDate, checkOutDate);
-
-        if (availableDates.isEmpty()) {
-            throw new DateNotAvailableException("No dates available for this period.");
-        }
     }
 
 }
